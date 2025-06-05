@@ -7,39 +7,53 @@ class SchemaParser
   public static function parseFile(string $path): array
   {
     $content = file_get_contents($path);
+
+    $matches = [];
     preg_match_all('/table (\w+)\s*{([^}]+)}/', $content, $matches, PREG_SET_ORDER);
 
-    $tables = [];
+    return collect($matches)
+      ->mapWithKeys(function ($match) {
+        $table = trim($match[1]);
+        $columns = self::parseColumns(trim($match[2]));
 
-    foreach ($matches as $match) {
-      $tableName = trim($match[1]);
-      $body = trim($match[2]);
-      $lines = preg_split("/\r?\n/", $body);
+        return [$table => $columns];
+      })
+      ->all();
+  }
 
-      $columns = [];
-      foreach ($lines as $line) {
-        $line = trim($line);
-        if ($line === '') continue;
-        $parts = preg_split('/\s+/', $line);
+  private static function parseColumns(string $body): array
+  {
+    return collect(preg_split("/\r?\n/", $body))
+      ->map(fn($line) => trim($line))
+      ->filter()
+      ->map(fn($line) => self::parseLine($line))
+      ->all();
+  }
 
-        if (count($parts) === 1) {
-          $columns[] = [
-            'name' => $parts[0],
-            'type' => 'special',
-            'modifiers' => []
-          ];
-        } else {
-          $columns[] = [
-            'name' => $parts[0],
-            'type' => $parts[1],
-            'modifiers' => array_slice($parts, 2)
-          ];
-        }
-      }
+  private static function parseLine(string $line): array
+  {
+    $parts = preg_split('/\s+/', $line);
 
-      $tables[$tableName] = $columns;
-    }
+    return count($parts) === 1
+      ? self::specialColumn($parts[0])
+      : self::normalColumn($parts);
+  }
 
-    return $tables;
+  private static function specialColumn(string $name): array
+  {
+    return [
+      'name' => $name,
+      'type' => 'special',
+      'modifiers' => []
+    ];
+  }
+
+  private static function normalColumn(array $parts): array
+  {
+    return [
+      'name' => $parts[0],
+      'type' => $parts[1],
+      'modifiers' => array_slice($parts, 2)
+    ];
   }
 }
