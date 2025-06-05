@@ -6,7 +6,8 @@
         "migrations",
         "generator",
         "schema",
-        "dsl"
+        "dsl",
+        "database"
     ],
     "type": "library",
     "license": "MIT",
@@ -22,16 +23,19 @@
     },
     "autoload": {
         "psr-4": {
-            "LaravelSchemaPy\\": "src/"
+            "LaravelSchema\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "LaravelSchemaPy\\SchemaServiceProvider"
+                "LaravelSchema\\SchemaServiceProvider"
             ]
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "require-dev": {
+        "laravel/pint": "^1.22"
+    }
 }

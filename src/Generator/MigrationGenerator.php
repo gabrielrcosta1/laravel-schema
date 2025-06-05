@@ -1,6 +1,8 @@
 <?php
 
-namespace LaravelSchemaPy\Generator;
+declare(strict_types=1);
+
+namespace LaravelSchema\Generator;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -28,7 +30,7 @@ class MigrationGenerator
         $base = base_path();
 
         $migrations = "{$base}/database/migrations";
-        $hashDir = "vendor/gabrielrcosta1/laravel-schema/src/.schema-cache";
+        $hashDir = 'vendor/gabrielrcosta1/laravel-schema/src/.schema-cache';
 
         File::ensureDirectoryExists($migrations);
         File::ensureDirectoryExists($hashDir);
@@ -36,7 +38,7 @@ class MigrationGenerator
         return [
             'migrations' => $migrations,
             'hash' => "{$hashDir}/{$table}.hash",
-            'template' => "vendor/gabrielrcosta1/laravel-schema/templates/migration.php.stub",
+            'template' => 'vendor/gabrielrcosta1/laravel-schema/templates/migration.php.stub',
         ];
     }
 
@@ -47,7 +49,7 @@ class MigrationGenerator
 
     private static function isUnchanged(string $hashFile, string $currentHash): bool
     {
-        return File::exists($hashFile) && trim(File::get($hashFile)) === $currentHash;
+        return File::exists($hashFile) && mb_trim(File::get($hashFile)) === $currentHash;
     }
 
     private static function resolveFilename(string $table, string $dir): string
@@ -77,19 +79,19 @@ class MigrationGenerator
     private static function renderColumn(array $field): string
     {
         return match ($field['type']) {
-            'special'        => self::renderSpecial($field['name']),
-            'primary'        => '$table->id();',
-            'rememberToken'  => '$table->rememberToken();',
-            default          => self::renderStandard($field),
+            'special' => self::renderSpecial($field['name']),
+            'primary' => '$table->id();',
+            'rememberToken' => '$table->rememberToken();',
+            default => self::renderStandard($field),
         };
     }
 
     private static function renderSpecial(string $name): string
     {
         return match ($name) {
-            'timestamps'    => '$table->timestamps();',
-            'softDeletes'   => '$table->softDeletes();',
-            default         => "// Unknown directive: {$name}",
+            'timestamps' => '$table->timestamps();',
+            'softDeletes' => '$table->softDeletes();',
+            default => "// Unknown directive: {$name}",
         };
     }
 
@@ -109,7 +111,8 @@ class MigrationGenerator
 
     private static function renderForeign(string $name, string $type): string
     {
-        [$refTable, $refColumn] = explode('.', substr($type, 8));
+        [$refTable, $refColumn] = explode('.', mb_substr($type, 8));
+
         return "\$table->foreignId('{$name}')->constrained('{$refTable}')->references('{$refColumn}')";
     }
 
@@ -117,9 +120,9 @@ class MigrationGenerator
     {
         return match ($modifier) {
             'nullable' => 'nullable()',
-            'unique'   => 'unique()',
-            'index'    => 'index()',
-            default    => '// unknown modifier: ' . $modifier,
+            'unique' => 'unique()',
+            'index' => 'index()',
+            default => '// unknown modifier: ' . $modifier,
         };
     }
 }

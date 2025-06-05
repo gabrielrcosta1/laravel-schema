@@ -1,18 +1,20 @@
 <?php
 
-namespace LaravelSchemaPy;
+declare(strict_types=1);
+
+namespace LaravelSchema;
 
 use Illuminate\Support\ServiceProvider;
-use LaravelSchemaPy\Console\Commands\SchemaCreate;
-use LaravelSchemaPy\Console\Commands\SchemaMigrate;
+use LaravelSchema\Console\Commands\SchemaCreate;
+use LaravelSchema\Console\Commands\SchemaMigrate;
 
 class SchemaServiceProvider extends ServiceProvider
 {
-  public function register()
-  {
-    $this->commands([
-      SchemaCreate::class,
-      SchemaMigrate::class,
-    ]);
-  }
+    public function register()
+    {
+        $this->commands([
+            SchemaCreate::class,
+            SchemaMigrate::class,
+        ]);
+    }
 }

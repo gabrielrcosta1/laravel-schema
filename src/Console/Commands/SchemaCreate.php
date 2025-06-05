@@ -1,25 +1,29 @@
 <?php
 
-namespace LaravelSchemaPy\Console\Commands;
+declare(strict_types=1);
+
+namespace LaravelSchema\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
 class SchemaCreate extends Command
 {
-  protected $signature = 'schema:create';
-  protected $description = 'Create the initial schema.db file';
+    protected $signature = 'schema:create';
 
-  public function handle()
-  {
-    $path = base_path('database/schema.db');
+    protected $description = 'Create the initial schema.db file';
 
-    if (File::exists($path)) {
-      $this->warn('schema.db already exists. No changes made.');
-      return;
-    }
+    public function handle()
+    {
+        $path = base_path('database/schema.db');
 
-    $content = <<<EOT
+        if (File::exists($path)) {
+            $this->warn('schema.db already exists. No changes made.');
+
+            return;
+        }
+
+        $content = <<<'EOT'
 table users {
     id primary
     name string
@@ -46,8 +50,8 @@ table sessions {
 }
 EOT;
 
-    File::ensureDirectoryExists(dirname($path));
-    File::put($path, $content);
-    $this->info('schema.db created.');
-  }
+        File::ensureDirectoryExists(dirname($path));
+        File::put($path, $content);
+        $this->info('schema.db created.');
+    }
 }
