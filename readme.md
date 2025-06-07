@@ -73,6 +73,7 @@ table posts {
     published_at timestamp nullable
     user_id foreign:users.id
     timestamps
+    softDeletes
 }
 ```
 
