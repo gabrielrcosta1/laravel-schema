@@ -57,9 +57,7 @@ This will create the file:
 
 With default content for:
 
-- `users`
-- `password_reset_tokens`
-- `sessions`
+- `posts`
 
 ---
 
