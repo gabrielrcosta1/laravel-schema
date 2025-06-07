@@ -15,7 +15,7 @@ class SchemaCreate extends Command
 
     public function handle()
     {
-        $path = base_path('database/schema.db');
+        $path = config('app.schema_dir');
 
         if (File::exists($path)) {
             $this->warn('schema.db already exists. No changes made.');
@@ -24,29 +24,12 @@ class SchemaCreate extends Command
         }
 
         $content = <<<'EOT'
-table users {
+table posts {
     id primary
-    name string
-    email string unique
-    email_verified_at timestamp nullable
-    password string
-    remember_token rememberToken
+    title string
+    content text
     timestamps
-}
-
-table password_reset_tokens {
-    email string primary
-    token string
-    created_at timestamp nullable
-}
-
-table sessions {
-    id string primary
-    user_id foreign:users.id nullable index
-    ip_address string nullable length:45
-    user_agent text nullable
-    payload longText
-    last_activity integer index
+    softDeletes
 }
 EOT;
 

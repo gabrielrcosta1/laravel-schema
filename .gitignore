@@ -1,3 +1,4 @@
 /src/.schema-cache
 composer.lock
 /vendor
+/src/schema-cache

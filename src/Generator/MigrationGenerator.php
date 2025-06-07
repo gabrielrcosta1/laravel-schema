@@ -27,18 +27,17 @@ class MigrationGenerator
 
     private static function resolvePaths(string $table): array
     {
-        $base = base_path();
 
-        $migrations = "{$base}/database/migrations";
-        $hashDir = 'vendor/gabrielrcosta1/laravel-schema/src/.schema-cache';
+        $migrations = config('app.migrations_dir');
+        $hashDir = config('app.hash_cache_dir');
 
         File::ensureDirectoryExists($migrations);
         File::ensureDirectoryExists($hashDir);
 
         return [
             'migrations' => $migrations,
-            'hash' => "{$hashDir}/{$table}.hash",
-            'template' => 'vendor/gabrielrcosta1/laravel-schema/templates/migration.php.stub',
+            'hash' => config('app.hash_cache_dir')."/{$table}.hash",
+            'template' => config('app.template_dir'),
         ];
     }
 
@@ -55,18 +54,18 @@ class MigrationGenerator
     private static function resolveFilename(string $table, string $dir): string
     {
         $existing = collect(File::files($dir))
-            ->first(fn($f) => Str::contains($f->getFilename(), "create_{$table}_table"));
+            ->first(fn ($f) => Str::contains($f->getFilename(), "create_{$table}_table"));
 
         return $existing
             ? $existing->getFilename()
-            : now()->format('Y_m_d_His') . "_create_{$table}_table.php";
+            : now()->format('Y_m_d_His')."_create_{$table}_table.php";
     }
 
     private static function buildMigration(string $table, array $columns): string
     {
-        $template = file_get_contents('vendor/gabrielrcosta1/laravel-schema/templates/migration.php.stub');
+        $template = file_get_contents(config('app.template_dir'));
         $lines = collect($columns)
-            ->map(fn($col) => self::renderColumn($col))
+            ->map(fn ($col) => self::renderColumn($col))
             ->implode("\n            ");
 
         return str_replace(
@@ -106,7 +105,7 @@ class MigrationGenerator
             : "\$table->{$type}('{$name}')";
 
         return $modifiers
-            ->reduce(fn($acc, $mod) => "{$acc}->" . self::modifierCall($mod), $line) . ';';
+            ->reduce(fn ($acc, $mod) => "{$acc}->".self::modifierCall($mod), $line).';';
     }
 
     private static function renderForeign(string $name, string $type): string
@@ -122,7 +121,7 @@ class MigrationGenerator
             'nullable' => 'nullable()',
             'unique' => 'unique()',
             'index' => 'index()',
-            default => '// unknown modifier: ' . $modifier,
+            default => '// unknown modifier: '.$modifier,
         };
     }
 }

@@ -26,9 +26,9 @@ class SchemaParser
     private static function parseColumns(string $body): array
     {
         return collect(preg_split("/\r?\n/", $body))
-            ->map(fn($line) => mb_trim($line))
+            ->map(fn ($line) => mb_trim($line))
             ->filter()
-            ->map(fn($line) => self::parseLine($line))
+            ->map(fn ($line) => self::parseLine($line))
             ->all();
     }
 

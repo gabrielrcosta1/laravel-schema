@@ -29,10 +29,14 @@ composer require gabrielrcosta1/laravel-schema
 
 ## 📁 What It Does
 
-- Adds two Artisan commands: `schema:create` and `schema:migrate`
+- Adds Artisan commands:
+  - `schema:create`
+  - `schema:migrate`
+  - `schema:reset`
 - Lets you define your database tables in a single DSL file
 - Generates Laravel-compatible migration files into `database/migrations`
-- Keeps track of schema changes via internal hash cache
+- Tracks schema changes and generates only incremental migrations
+- Supports full or table-specific reset
 - Lets you run `php artisan migrate` as usual
 
 ---
@@ -45,7 +49,7 @@ composer require gabrielrcosta1/laravel-schema
 php artisan schema:create
 ```
 
-This will create a file at:
+This will create the file:
 
 ```
 /your-laravel-project/database/schema.db
@@ -61,7 +65,7 @@ With default content for:
 
 ### 2. Define your schema (example)
 
-You can edit `database/schema.db` like this:
+Edit `database/schema.db` like this:
 
 ```txt
 table posts {
@@ -82,11 +86,13 @@ table posts {
 php artisan schema:migrate
 ```
 
-This will read `schema.db`, compare hashes, and generate only updated migration files into:
+This will:
 
-```
-database/migrations/
-```
+- Parse `schema.db`
+- Compare with previous schema
+- Generate new migrations:
+  - full table migrations
+  - incremental `add_` / `remove_` migrations
 
 ---
 
@@ -98,13 +104,38 @@ php artisan migrate
 
 ---
 
+### 5. Reset generated migrations
+
+If you want to delete generated migrations and schema cache:
+
+#### Reset everything:
+
+```bash
+php artisan schema:reset --all
+```
+
+#### Reset only one table:
+
+```bash
+php artisan schema:reset
+# You will be prompted for the table name
+```
+
+This deletes:
+
+- The migration files related to the selected table(s)
+- The schema cache files (.json and .hash)
+
+---
+
 ## ✅ Commands Summary
 
-| Command               | Description                            |
-| --------------------- | -------------------------------------- |
-| `schema:create`       | Create `schema.db` with default tables |
-| `schema:migrate`      | Generate migration files from schema   |
-| `php artisan migrate` | Apply the generated migrations         |
+| Command               | Description                                                 |
+| --------------------- | ----------------------------------------------------------- |
+| `schema:create`       | Create `schema.db` with default tables                      |
+| `schema:migrate`      | Generate migrations from schema (full or incremental)       |
+| `schema:reset`        | Delete generated migrations and cache (`--all` or specific) |
+| `php artisan migrate` | Apply the generated migrations                              |
 
 ---
 
