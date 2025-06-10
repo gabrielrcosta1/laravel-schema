@@ -7,18 +7,6 @@ Generate Laravel migration files based on a simple DSL (domain-specific language
 ---
 
 ## 📦 Installation
-
-Add the repository to your Laravel project's `composer.json`:
-
-```json
-"repositories": [
-  {
-    "type": "vcs",
-    "url": "https://github.com/gabrielrcosta1/laravel-schema"
-  }
-]
-```
-
 Then run:
 
 ```bash
